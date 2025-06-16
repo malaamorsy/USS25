@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undergraduate Summer Seminar 2025 – USS25</title>
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+
+	@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .card-hover {
+            transition: transform 0.7s ease, box-shadow 0.7s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .animate-node {
+            animation: none;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        
+        .animate-line {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: dash 15s linear infinite;
+        }
+        
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        section {
+            scroll-margin-top: 80px;
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+        
+        .fade-in.show {
+            opacity: 1;
+        }
+        
+        #scrollToTop {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99;
+            transition: all 0.3s ease;
+        }
+        
+        #scrollToTop:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    
+<!-- Graph Canvas Animation -->
+<canvas id="graph-canvas" class="fixed top-0 left-0 w-full h-full z-[-1] opacity-90 pointer-events-none"></canvas>
+<script>
+    const canvas = document.getElementById('graph-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const nodeCount = 50;
+    const radius = Math.min(window.innerWidth, window.innerHeight) / 2.45;
+    let nodes = [];
+    let angleOffset = 0;
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+        positionNodes();
+    });
+
+function positionNodes() {
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    nodes = [];
+
+    for (let i = 0; i < nodeCount; i++) {
+        const angle = (2 * Math.PI * i) / nodeCount + angleOffset;
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+        nodes.push({ x, y });
+    }
+}
+
+
+    // Create random edges between nodes
+    function createEdges() {
+        const edges = [];
+        for (let i = 0; i < nodeCount; i++) {
+            // Each node connects to 2–4 random others
+            const connections = Math.floor(Math.random() * 3) + 2;
+            for (let j = 0; j < connections; j++) {
+                let target = Math.floor(Math.random() * nodeCount);
+                if (target !== i && !edges.some(e => (e[0] === i && e[1] === target) || (e[0] === target && e[1] === i))) {
+                    edges.push([i, target]);
+                }
+            }
+        }
+        return edges;
+    }
+
+    const edges = createEdges();
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    angleOffset += 0.002; // Speed of rotation; lower is slower
+    positionNodes(); // Update positions using the current angle
+
+    // Draw edges
+    ctx.lineWidth = 0.5;
+    for (let [i, j] of edges) {
+        const nodeA = nodes[i];
+        const nodeB = nodes[j];
+        ctx.strokeStyle = `rgba(30, 64, 175, 0.35)`;
+        ctx.beginPath();
+        ctx.moveTo(nodeA.x, nodeA.y);
+        ctx.lineTo(nodeB.x, nodeB.y);
+        ctx.stroke();
+    }
+
+    // Draw nodes
+    for (let node of nodes) {
+        const gradient = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, 4);
+        gradient.addColorStop(0, '#3b82f6');
+        gradient.addColorStop(1, 'rgba(59,130,246,1)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+}
+
+    resizeCanvas();
+    positionNodes();
+    draw();
+</script>
+    
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center space-x-2">
+                        <span class="text-xl font-bold text-gray-800">USS 25</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-800 hover:text-blue-600 transition">About</a>
+                    <a href="Lecturers.html" class="text-gray-800 hover:text-blue-600 transition">Lecturers</a>
+                    <a href="Organizers.html" class="text-gray-800 hover:text-blue-600 transition">Organisers</a>
+                    <a href="Schedule.html" class="text-gray-800 hover:text-blue-600 transition">Schedule</a>
+                </div>
+                <div class="flex items-center md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-800">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:text-blue-600 hover:bg-gray-100">About</a>
+                <a href="Lecturers.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:text-blue-600 hover:bg-gray-100">Lecturers</a>
+                <a href="Organizers.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:text-blue-600 hover:bg-gray-100">Organisers</a>
+                <a href="Schedule.html" class="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:text-blue-600 hover:bg-gray-100">Schedule</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <header class="relative pt-24 pb-16 md:pt-32 md:pb-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center fade-in">
+                <h1 id="animated-heading" class="text-4xl md:text-6xl font-bold text-gray-900 mb-4 opacity-0">
+    			Undergraduate Summer Seminar 2025 (USS25)
+		</h1>
+                <h2 class="text-2xl md:text-3xl font-semibold text-blue-600 mb-6">Undergraduate Summer Seminar</h2>
+                <div class="flex justify-center items-center mb-8">
+                    <div class="text-left">
+                        <p class="text-lg font-medium text-gray-700">Ain Shams University</p>
+                        <p class="text-gray-600 text-center">(June, 29 - August, 6)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent"></div>
+    </header>
+    
+    <!-- About Section -->
+    <section id="about" class="py-16 md:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900">About the Seminar</h2>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="fade-in">
+                    <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+    The Undergraduate Summer Seminar 2025 at Ain Shams University offers intensive courses for motivated students in core areas of mathematics.
+</p>
+<p class="text-lg text-gray-700 mb-6 leading-relaxed">
+    Topics include Linear Algebra, Real Analysis, Number Theory, Graph Theory, and Machine Learning, with a focus on "Emerging Frontiers in Mathematical Sciences.
+</p>
+<p class="text-lg text-gray-700 mb-6 leading-relaxed">
+    Students will engage with expert instructors through lectures, problem-solving sessions, and discussions in a dynamic and supportive academic setting.
+</p>
+
+                </div>
+                <div class="fade-in">
+                    <div class="bg-gray-50 rounded-xl p-8 shadow-sm">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Key Features</h3>
+                            <ul class="space-y-3">
+<li class="flex items-center">
+    <svg class="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span class="text-gray-700">Two days a week of intensive mathematical exposure.</span>
+</li>
+
+<li class="flex items-center">
+    <svg class="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span class="text-gray-700">Reinforce the basics in more concrete way.</span>
+</li>
+
+<li class="flex items-center">
+    <svg class="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span class="text-gray-700">Enhancing the problem solving skills.</span>
+</li>
+
+<li class="flex items-center">
+    <svg class="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span class="text-gray-700">Making connections between trends like AI, ML and the mathematical basement for them.</span>
+</li>
+
+<li class="flex items-center">
+    <svg class="h-6 w-6 text-blue-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    <span class="text-gray-700">Making connections between talented students in different areas across Egypt, and in different majors around mathematics.</span>
+</li>
+
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Who Should Attend</h3>
+                            <p class="text-gray-700">
+                                The seminar is ideal for undergraduate students in mathematics or related fields. Participants should be eager to explore advanced topics beyond standard curriculum.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+        
+    <!-- Footer -->
+<footer class="bg-gray-900 text-white pt-12 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Column 1: About -->
+            <div>
+                <h3 class="text-xl font-bold mb-4">Undergraduate Summer Seminar 2025 (USS25)</h3>
+                <p class="text-gray-300">
+                    The Undergraduate Summer Seminar 2025 at Ain Shams University offers intensive courses for motivated students in core and emerging areas of mathematics.
+                </p>
+            </div>
+
+            <!-- Column 2: Quick Links -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                <ul class="space-y-2">
+                    <li><a href="index.html" class="text-gray-300 hover:text-white transition">About</a></li>
+                    <li><a href="Lecturers.html" class="text-gray-300 hover:text-white transition">Lecturers</a></li>
+                    <li><a href="Organizers.html" class="text-gray-300 hover:text-white transition">Organisers</a></li>
+                    <li><a href="Schedule.html" class="text-gray-300 hover:text-white transition">Schedule</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Contact Info -->
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                <ul class="space-y-2 text-gray-300">
+                    <li class="flex items-start">
+                        <i class="fas fa-map-marker-alt mt-1 mr-2 text-blue-400"></i>
+                        <span>Department of Mathematics<br>Ain Shams University<br>Cairo, Egypt</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-phone mr-2 text-blue-400"></i>
+                        <span>+20 114 152 3139</span>
+                    </li>
+                </ul>
+            </div>
+</footer>
+
+    
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTop" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+        </svg>
+    </button>
+    
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                if (document.getElementById('mobile-menu').classList.contains('hidden') === false) {
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                }
+                
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Show scroll to top button when scrolling down
+        window.addEventListener('scroll', function() {
+            const scrollToTopButton = document.getElementById('scrollToTop');
+            if (window.pageYOffset > 300) {
+                scrollToTopButton.style.display = 'block';
+            } else {
+                scrollToTopButton.style.display = 'none';
+            }
+        });
+        
+        // Scroll to top when button is clicked
+        document.getElementById('scrollToTop').addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Fade-in animation on scroll
+        const fadeElements = document.querySelectorAll('.fade-in');
+        
+        const fadeInObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('show');
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+        
+        fadeElements.forEach(element => {
+            fadeInObserver.observe(element);
+        });
+        
+        // Initialize GSAP animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Animate sections on scroll
+        gsap.utils.toArray('section').forEach(section => {
+            gsap.from(section, {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power2.out"
+            });
+        });
+    </script>
+
+</body>
+</html>
